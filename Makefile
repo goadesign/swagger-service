@@ -41,6 +41,11 @@ test:
 build:
 	@docker build -t gcr.io/goa-swagger/service-node .
 
+gke:
+	@gcloud container clusters create goa-swagger --num-nodes 3 --machine-type n1-standard-1
+	@kubectl run service-node --image=gcr.io/goa-swagger/service-node --port=8080
+	@kubectl expose rc service-node --type="LoadBalancer"
+
 run:
 	docker run --rm --publish 8080:8080 gcr.io/goa-swagger/service-node
 
