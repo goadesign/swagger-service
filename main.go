@@ -8,7 +8,7 @@ import (
 
 func main() {
 	// Create service
-	api := goa.New("goa Swagger service")
+	api := goa.NewGraceful("goa Swagger service")
 
 	// Setup middleware
 	api.Use(goa.RequestID())

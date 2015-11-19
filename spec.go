@@ -31,6 +31,9 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 	getCmd.Env = []string{"GOPATH=" + tmpGoPath, "PATH=" + os.Getenv("PATH")}
 	out, err := getCmd.CombinedOutput()
 	if err != nil {
+		if len(out) == 0 {
+			out = []byte(err.Error())
+		}
 		return ctx.UnprocessableEntity(out)
 	}
 	sha := extractSHA(filepath.Join(tmpGoPath, "src", packagePath))
@@ -46,6 +49,9 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 	}
 	out, err = genCmd.CombinedOutput()
 	if err != nil {
+		if len(out) == 0 {
+			out = []byte(err.Error())
+		}
 		return ctx.UnprocessableEntity(out)
 	}
 	b, err := ioutil.ReadFile(filepath.Join(tmpGoPath, "swagger", "swagger.json"))
