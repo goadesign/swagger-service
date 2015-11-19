@@ -36,12 +36,12 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 		}
 		return ctx.UnprocessableEntity(out)
 	}
-	sha := extractSHA(filepath.Join(tmpGoPath, "src", packagePath))
-	if sha != "" {
-		if b, err := Load(packagePath, sha); err == nil {
-			return ctx.OK(b)
-		}
-	}
+	// sha := extractSHA(filepath.Join(tmpGoPath, "src", packagePath))
+	// if sha != "" {
+	// 	if b, err := Load(packagePath, sha); err == nil {
+	// 		return ctx.OK(b)
+	// 	}
+	// }
 	genCmd := exec.Command("goagen", "-o", tmpGoPath, "swagger", "-d", packagePath)
 	genCmd.Env = []string{
 		fmt.Sprintf("GOPATH=%s:%s", tmpGoPath, os.Getenv("GOPATH")),
@@ -58,12 +58,12 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 	if err != nil {
 		return ctx.UnprocessableEntity([]byte(err.Error()))
 	}
-	if sha != "" {
-		err := Save(b, packagePath, sha)
-		if err != nil {
-			ctx.Error("failed to save swagger spec", "package", packagePath, "error", err.Error())
-		}
-	}
+	// if sha != "" {
+	// 	err := Save(b, packagePath, sha)
+	// 	if err != nil {
+	// 		ctx.Error("failed to save swagger spec", "package", packagePath, "error", err.Error())
+	// 	}
+	// }
 	return ctx.OK(b)
 }
 
