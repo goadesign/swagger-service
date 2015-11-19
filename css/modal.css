@@ -1,80 +1,79 @@
 .modal {
         display:none;
         position: absolute;
-        top: 0;
+        top: 100px;
         left: 2%;
         width: 96%;
 }
 
-.modal .inline-form {
-        margin-top: 100px;
-}
-
-.modal .prompt {
+.prompt {
         font-size: 36px;
         color: #556677;
-        width: 100%;
-        text-align: center;
+        margin-bottom:20px;
+        text-align:center;
 }
 
-.modal .container {
-        margin: 20px;
-        width: 100%;
-        position: relative;
+.wrap {
+        position:relative;
+	margin:0;
+	padding:10px;
 }
 
-.modal .container .left {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 220px;
+.left {
+        position:relative;
+        top:-10px;
+        left:-10px;
+        float:left;
+        width:120px;  /* for IE5/WIN */
+        voice-family: "\"}\"";
+        voice-family:inherit;
+        width:200px; /* actual value */
+        margin:0 0 -10px 0;
+        padding:10px;
+        z-index:100;
 }
 
-.modal .container .left input[type=text] {
+.center {
+         position:relative;
+         padding:0 220px;
+  }
+
+.center input[type=text] {
         border: solid 1px #89b3af;
         font-size: 20px;
         padding: 5px;
-        width: 100%;
         height: 24px;
+        width: 100%;
 }
 
-.modal .container .right {
-        position: absolute;
-        width: 200px;
-        top: 0;
-        right: -20px;
-        margin-right: 20px;
+.right {
+        position:relative;
+	top:-10px;
+	right:-10px;
+	float:right;
+	width:40px;  /* for IE5/WIN */
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	width:200px; /* actual value */
+	margin:0 0 -10px 0;
+	padding:10px;
+	z-index:99;
 }
 
-.modal .inner_left {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 80px;
-        height:36px;
-}
-
-.modal .filename {
-        margin-top: 6px;
+.filename {
         font-size: 20px;
         color: #99aabb;
+        height: 36px;
+        text-align: right;
+        margin-top:6px;
 }
 
-
-.modal .inner_right {
-        position: absolute;
-        width: 80px;
-        top: 0;
-        right: 0;
-}
-
-.modal #explore {
+#explore {
         display: block;
         background: url("../images/go-button.png");
         background-size: 36px 36px;
         width: 36px;
         height: 36px;
         margin-left: 10px;
-        borders: solid 1px red;
         text-indent:-360000px;
 }

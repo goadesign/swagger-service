@@ -32,6 +32,10 @@
         $(function () {
                 var url = window.location.search.match(/url=([^&]+)/);
                 if (url && url.length > 1) {
+                        url = url[1]
+                        if (url.slice(0, 11) != "github.com/") {
+                                url = "github.com/" + url
+                        }
                         url = "http://104.197.39.175:8080/swagger/spec/"+url
                 } else {
                         $("#api_selector").show()
@@ -69,8 +73,8 @@
                         onFailure: function(data) {
                                 log("Unable to Load SwaggerUI");
                         },
-                        docExpansion: "none",
-                        apisSorter: "alpha",
+                        docExpansion: "full",
+                        // apisSorter: "alpha",
                         showRequestHeaders: false
                 });
 
@@ -108,26 +112,23 @@
         </div>
 
         <div id="message-bar" class="swagger-ui-wrap" data-sw-translate>&nbsp;</div>
-        <div id="swagger-ui-container" class="swagger-ui-wrap"></div>
         <!-- user input dialog -->
         <div class="modal" id="api_selector">
                 <form accept-charset="UTF-8" id="prompt">
-                        <div class="inline-form">
-                                <div class="prompt">
-                                        <p>Swagger spec</p>
+                        <div class="prompt">
+                                <p>goa service design package:</p>
+                        </div>
+                        <div class="wrap">
+                                <div class="left">
+                                        <div class="filename">
+                                                github.com/
+                                        </div>
                                 </div>
-                                <div class="container">
-                                        <div class="left">
-                                                <input id="input_baseUrl" name="url" type="text" />
-                                        </div>
-                                        <div class="right">
-                                                <div class="inner_left filename">
-                                                        /swagger.json
-                                                </div>
-                                                <div class="inner_right">
-                                                        <a id="explore" href="#">Go</a>
-                                                </div>
-                                        </div>
+                                <div class="right">
+                                        <a id="explore" href="#">Go</a>
+                                </div>
+                                <div class="center">
+                                        <input id="input_baseUrl" name="url" type="text" />
                                 </div>
                         </div>
                 </form>
