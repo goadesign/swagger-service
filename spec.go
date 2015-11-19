@@ -38,7 +38,7 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 	}
 	sha := extractSHA(filepath.Join(tmpGoPath, "src", packagePath))
 	if sha != "" {
-		if b, ok := Load(packagePath, sha); ok {
+		if b, err := Load(packagePath, sha); err == nil {
 			return ctx.OK(b)
 		}
 	}
@@ -59,7 +59,10 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 		return ctx.UnprocessableEntity([]byte(err.Error()))
 	}
 	if sha != "" {
-		Save(b, packagePath, sha)
+		err := Save(b, packagePath, sha)
+		if err != nil {
+			ctx.Error("failed to save swagger spec", "package", packagePath, "error", err.Error())
+		}
 	}
 	return ctx.OK(b)
 }
