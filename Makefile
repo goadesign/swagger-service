@@ -7,6 +7,7 @@
 # - "lint" runs the linter and checks the code format using goimports
 # - "test" runs the tests
 # - "build" builds the docker container with the latest master from github
+# - "run" run service in docker
 # - "deploy" deploys the latest build to GKE
 #
 # Meta targets:
@@ -39,6 +40,9 @@ test:
 
 build:
 	@docker build -t gcr.io/goa-swagger/service-node .
+
+run:
+	docker run --rm --publish 8080:8080 gcr.io/goa-swagger/service-node
 
 deploy:
 	@gcloud docker push gcr.io/goa-swagger/service-node
