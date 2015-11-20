@@ -36,12 +36,15 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 		}
 		return ctx.UnprocessableEntity(out)
 	}
-	// sha := extractSHA(filepath.Join(tmpGoPath, "src", packagePath))
-	// if sha != "" {
-	// 	if b, err := Load(packagePath, sha); err == nil {
-	// 		return ctx.OK(b)
-	// 	}
-	// }
+	sha := extractSHA(filepath.Join(tmpGoPath, "src", packagePath))
+	if sha != "" {
+		b, err := Load(packagePath, sha)
+		if err != nil {
+			ctx.Info("cache miss", "sha", sha, "error", err.Error())
+		} else {
+			return ctx.OK(b)
+		}
+	}
 	genCmd := exec.Command("goagen", "-o", tmpGoPath, "swagger", "-d", packagePath)
 	genCmd.Env = []string{
 		fmt.Sprintf("GOPATH=%s:%s", tmpGoPath, os.Getenv("GOPATH")),
@@ -58,26 +61,33 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 	if err != nil {
 		return ctx.UnprocessableEntity([]byte(err.Error()))
 	}
-	// if sha != "" {
-	// 	err := Save(b, packagePath, sha)
-	// 	if err != nil {
-	// 		ctx.Error("failed to save swagger spec", "package", packagePath, "error", err.Error())
-	// 	}
-	// }
+	if sha != "" {
+		err := Save(b, packagePath, sha)
+		if err != nil {
+			ctx.Error("failed to save swagger spec", "package", packagePath, "error", err.Error())
+		}
+	}
 	return ctx.OK(b)
 }
 
 func extractSHA(vcsDir string) string {
-	gitSHA := filepath.Join(vcsDir, ".git/refs/heads/go1")
-	if _, err := os.Stat(gitSHA); err == nil {
-		if b, err := ioutil.ReadFile(gitSHA); err == nil {
-			return string(b)
+	for len(vcsDir) > 0 {
+		gitSHA := filepath.Join(vcsDir, ".git/refs/heads/go1")
+		if _, err := os.Stat(gitSHA); err == nil {
+			if b, err := ioutil.ReadFile(gitSHA); err == nil {
+				return string(b)
+			}
 		}
-	}
-	gitSHA = filepath.Join(vcsDir, ".git/refs/heads/master")
-	if _, err := os.Stat(gitSHA); err == nil {
-		if b, err := ioutil.ReadFile(gitSHA); err == nil {
-			return string(b)
+		gitSHA = filepath.Join(vcsDir, ".git/refs/heads/master")
+		if _, err := os.Stat(gitSHA); err == nil {
+			if b, err := ioutil.ReadFile(gitSHA); err == nil {
+				return string(b)
+			}
+		}
+		if index := strings.LastIndex(vcsDir, "/"); index == -1 {
+			vcsDir = ""
+		} else {
+			vcsDir = vcsDir[:index]
 		}
 	}
 	// TBD: handle other vcs

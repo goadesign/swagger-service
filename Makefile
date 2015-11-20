@@ -51,4 +51,4 @@ run:
 
 deploy:
 	@gcloud docker push gcr.io/goa-swagger/service-node
-	@kubectl rolling-update service-node --image=gcr.io/goa-swagger/service-node
+	@kubectl rolling-update service-node --image=gcr.io/goa-swagger/service-node --update-period=10ms
