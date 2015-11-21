@@ -36,7 +36,7 @@ func init() {
 
 // Load attempts to load the swagger spec for the given package and given revision SHA.
 // It returns the swagger spec content and true on success, nil and false if not found.
-func Load(packagePath, sha string) ([]byte, error) {
+func Load(sha string) ([]byte, error) {
 	rc, err := storage.NewReader(ctx, bucketName, ObjectName(sha))
 	if err != nil {
 		return nil, err
@@ -46,8 +46,9 @@ func Load(packagePath, sha string) ([]byte, error) {
 }
 
 // Save saves the given swagger spec to the cache.
-func Save(b []byte, packagePath, sha string) error {
+func Save(b []byte, sha string) error {
 	wc := storage.NewWriter(ctx, bucketName, ObjectName(sha))
+	defer wc.Close()
 	wc.ContentType = "text/plain"
 	wc.ACL = []storage.ACLRule{{storage.AllAuthenticatedUsers, storage.RoleOwner}}
 	_, err := wc.Write(b)

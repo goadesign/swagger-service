@@ -19,7 +19,8 @@ func NewSpecController() *SpecController {
 	return &SpecController{}
 }
 
-// Show runs the show action.
+// Show clones the remote repo, runs "goagen swagger" and returns the corresponding JSON.
+// It uses cloud storage to cache the JSON using the git commit SHA in the object name.
 func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 	tmpGoPath, err := ioutil.TempDir("", "goa-swagger-")
 	if err != nil {
@@ -27,42 +28,43 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 	}
 	defer os.RemoveAll(tmpGoPath)
 	packagePath := strings.TrimPrefix(ctx.PackagePath, "/")
-	getCmd := exec.Command("go", "get", "-d", packagePath)
-	getCmd.Env = []string{"GOPATH=" + tmpGoPath, "PATH=" + os.Getenv("PATH")}
-	out, err := getCmd.CombinedOutput()
-	if err != nil {
-		if len(out) == 0 {
-			out = []byte(err.Error())
-		}
-		return ctx.UnprocessableEntity(out)
+	dir := filepath.Join(tmpGoPath, "src", packagePath)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return err
 	}
-	sha := extractSHA(filepath.Join(tmpGoPath, "src", packagePath))
-	if sha != "" {
-		b, err := Load(packagePath, sha)
-		if err != nil {
-			ctx.Info("cache miss", "sha", sha, "error", err.Error())
-		} else {
-			return ctx.OK(b)
-		}
+	elems := strings.Split(packagePath, "/")
+	if len(elems) < 3 {
+		return fmt.Errorf("invalid package path %s", packagePath)
+	}
+	repo := strings.Join(elems[:3], "/")
+	sha, err := clone("https://"+repo, dir)
+	if err != nil {
+		return ctx.UnprocessableEntity([]byte(fmt.Sprintf("git clone: %s", err.Error())))
+	}
+	b, err := Load(sha)
+	if err != nil {
+		ctx.Info("cache miss", "sha", sha)
+	} else {
+		return ctx.OK(b)
 	}
 	genCmd := exec.Command("goagen", "-o", tmpGoPath, "swagger", "-d", packagePath)
 	genCmd.Env = []string{
 		fmt.Sprintf("GOPATH=%s:%s", tmpGoPath, os.Getenv("GOPATH")),
 		"PATH=" + os.Getenv("PATH"),
 	}
-	out, err = genCmd.CombinedOutput()
+	out, err := genCmd.CombinedOutput()
 	if err != nil {
 		if len(out) == 0 {
 			out = []byte(err.Error())
 		}
 		return ctx.UnprocessableEntity(out)
 	}
-	b, err := ioutil.ReadFile(filepath.Join(tmpGoPath, "swagger", "swagger.json"))
+	b, err = ioutil.ReadFile(filepath.Join(tmpGoPath, "swagger", "swagger.json"))
 	if err != nil {
 		return ctx.UnprocessableEntity([]byte(err.Error()))
 	}
 	if sha != "" {
-		err := Save(b, packagePath, sha)
+		err := Save(b, sha)
 		if err != nil {
 			ctx.Error("failed to save swagger spec", "package", packagePath, "error", err.Error())
 		}
@@ -70,26 +72,27 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 	return ctx.OK(b)
 }
 
-func extractSHA(vcsDir string) string {
-	for len(vcsDir) > 0 {
-		gitSHA := filepath.Join(vcsDir, ".git/refs/heads/go1")
-		if _, err := os.Stat(gitSHA); err == nil {
-			if b, err := ioutil.ReadFile(gitSHA); err == nil {
-				return string(b)
-			}
-		}
-		gitSHA = filepath.Join(vcsDir, ".git/refs/heads/master")
-		if _, err := os.Stat(gitSHA); err == nil {
-			if b, err := ioutil.ReadFile(gitSHA); err == nil {
-				return string(b)
-			}
-		}
-		if index := strings.LastIndex(vcsDir, "/"); index == -1 {
-			vcsDir = ""
-		} else {
-			vcsDir = vcsDir[:index]
+// clone does a shallow clone of the repo in the given directory and returns the "go1" or - if there
+// is no go1 branch - the "master" branch SHA.
+func clone(repo, tmpDir string) (string, error) {
+	var branch string
+	clone := func() error {
+		gitCmd := exec.Command("git", "clone", "--depth=1", "--single-branch", "--branch", branch, repo)
+		gitCmd.Dir = tmpDir
+		return gitCmd.Run()
+	}
+	branch = "go1"
+	if err := clone(); err != nil {
+		branch = "master"
+		if err = clone(); err != nil {
+			return "", fmt.Errorf("failed to clone %s", repo)
 		}
 	}
-	// TBD: handle other vcs
-	return ""
+	gitCmd := exec.Command("git", "rev-parse", branch)
+	gitCmd.Dir = filepath.Join(tmpDir, filepath.Base(repo))
+	out, err := gitCmd.CombinedOutput()
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(out)), nil
 }
