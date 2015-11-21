@@ -14,6 +14,8 @@
 # - "all" is the default target, it runs all the targets in the order above.
 #
 DIRS=$(shell go list -f {{.Dir}} ./...)
+VERSION=2
+IMAGE=gcr.io/goa-swagger/service-node:$(VERSION)
 DEPEND=golang.org/x/tools/cmd/cover golang.org/x/tools/cmd/goimports \
 	github.com/golang/lint/golint github.com/onsi/gomega \
 	github.com/onsi/ginkgo github.com/onsi/ginkgo/ginkgo
@@ -39,16 +41,16 @@ test:
 	@ginkgo -r --randomizeAllSpecs --failOnPending --randomizeSuites --race -skipPackage vendor
 
 build:
-	@docker build -t gcr.io/goa-swagger/service-node .
+	@docker build -t $(IMAGE) .
 
 gke:
 	@gcloud container clusters create goa-swagger --num-nodes 3 --machine-type n1-standard-1
-	@kubectl run service-node --image=gcr.io/goa-swagger/service-node --port=8080
+	@kubectl run service-node --image=$(IMAGE) --port=8080
 	@kubectl expose rc service-node --type="LoadBalancer"
 
 run:
-	docker run --rm --publish 8080:8080 gcr.io/goa-swagger/service-node
+	docker run --rm --publish 8080:8080 $(IMAGE)
 
 deploy:
-	@gcloud docker push gcr.io/goa-swagger/service-node
-	@kubectl rolling-update --update-period=10ms service-node --image=gcr.io/goa-swagger/service-node
+	@gcloud docker push $(IMAGE)
+	@kubectl rolling-update --update-period=10ms service-node --image=$(IMAGE)
