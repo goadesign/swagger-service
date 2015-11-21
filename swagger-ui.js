@@ -1218,7 +1218,7 @@ SwaggerClient.prototype.build = function (mock) {
 
   var self = this;
 
-  this.progress('fetching resource list: ' + this.url + '; Please wait.');
+  this.progress('Analyzing repo...');
 
   var obj = {
     useJQuery: this.useJQuery,
@@ -30693,7 +30693,7 @@ Emitter.prototype.hasListeners = function(event){
  * TODO: combatible error handling?
  */
 
-module.exports = function(arr, fn, initial){  
+module.exports = function(arr, fn, initial){
   var idx = 0;
   var len = arr.length;
   var curr = arguments.length == 3
@@ -30703,7 +30703,7 @@ module.exports = function(arr, fn, initial){
   while (idx < len) {
     curr = fn.call(null, curr, arr[idx], ++idx, arr);
   }
-  
+
   return curr;
 };
 },{}]},{},[1])(1)
@@ -31134,7 +31134,8 @@ SwaggerUi.Views.HeaderView = Backbone.View.extend({
       trigger = false;
     }
 
-    $('#input_baseUrl').val(url);
+    val = url.replace(/^http:\/\/api.swagger.goa.design:8080\/swagger\/spec\/github.com\//, '')
+    $('#input_baseUrl').val(decodeURIComponent(val));
 
     //$('#input_apiKey').val(apiKey);
     if (trigger) {

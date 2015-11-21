@@ -36,7 +36,7 @@
                         if (url.slice(0, 11) != "github.com/") {
                                 url = "github.com/" + url;
                         }
-                        url = "http://104.197.128.144:8080/swagger/spec/"+url
+                        url = "http://api.swagger.goa.design:8080/swagger/spec/"+url;
                 } else {
                         $("#api_selector").show();
                 }
@@ -88,7 +88,6 @@
                 </div>
         </div>
 
-        <div id="message-bar" class="swagger-ui-wrap" data-sw-translate>&nbsp;</div>
         <div id="swagger-ui-container" class="swagger-ui-wrap"></div>
         <div class="modal" id="api_selector">
                 <form accept-charset="UTF-8" id="prompt">
@@ -110,5 +109,6 @@
                         </div>
                 </form>
         </div>
+        <div id="message-bar" class="swagger-ui-wrap" data-sw-translate>&nbsp;</div>
 </body>
 </html>
