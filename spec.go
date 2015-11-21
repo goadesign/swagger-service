@@ -28,15 +28,16 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 	}
 	defer os.RemoveAll(tmpGoPath)
 	packagePath := strings.TrimPrefix(ctx.PackagePath, "/")
-	dir := filepath.Join(tmpGoPath, "src", packagePath)
-	if err := os.MkdirAll(dir, 0755); err != nil {
-		return err
-	}
 	elems := strings.Split(packagePath, "/")
 	if len(elems) < 3 {
 		return fmt.Errorf("invalid package path %s", packagePath)
 	}
 	repo := strings.Join(elems[:3], "/")
+	dir := strings.Join(elems[:2], "/")
+	dir = filepath.Join(tmpGoPath, "src", dir)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return err
+	}
 	sha, err := clone("https://"+repo, dir)
 	if err != nil {
 		return ctx.UnprocessableEntity([]byte(fmt.Sprintf("git clone: %s", err.Error())))
