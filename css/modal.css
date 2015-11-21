@@ -1,5 +1,8 @@
-.modal {
-        display:none;
+#api_selector {
+        display: none;
+}
+
+.modal_form {
         position: absolute;
         top: 100px;
         left: 2%;
@@ -42,7 +45,6 @@
         border: solid 1px #89b3af;
         font-size: 20px;
         padding: 5px;
-        height: 24px;
         width: 100%;
 }
 
