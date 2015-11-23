@@ -8,15 +8,18 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/raphael/goa"
 	"github.com/raphael/goa-swagger/app"
 )
 
 // SpecController implements the spec resource.
-type SpecController struct{}
+type SpecController struct {
+	goa.Controller
+}
 
 // NewSpecController creates a spec controller.
-func NewSpecController() *SpecController {
-	return &SpecController{}
+func NewSpecController(service goa.Service) *SpecController {
+	return &SpecController{Controller: service.NewController("Spec")}
 }
 
 // Show clones the remote repo, runs "goagen swagger" and returns the corresponding JSON.

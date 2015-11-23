@@ -3,7 +3,7 @@
 //
 // Generated with goagen v0.0.1, command line:
 // $ goagen
-// --out=/home/raphael/go/src/github.com/raphael/goa-swagger
+// --out=$(GOPATH)/src/github.com/raphael/goa-swagger
 // --design=github.com/raphael/goa-swagger/design
 // --pkg=app
 //

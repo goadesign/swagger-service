@@ -3,7 +3,7 @@
 //
 // Generated with goagen v0.0.1, command line:
 // $ goagen
-// --out=/home/raphael/go/src/github.com/raphael/goa-swagger
+// --out=$(GOPATH)/src/github.com/raphael/goa-swagger
 // --design=github.com/raphael/goa-swagger/design
 // --pkg=app
 //
@@ -19,6 +19,7 @@ import (
 
 // SpecController is the controller interface for the Spec actions.
 type SpecController interface {
+	goa.Controller
 	Show(*ShowSpecContext) error
 }
 
@@ -33,6 +34,6 @@ func MountSpecController(service goa.Service, ctrl SpecController) {
 		}
 		return ctrl.Show(ctx)
 	}
-	router.Handle("GET", "/swagger/spec/*packagePath", goa.NewHTTPRouterHandle(service, "Spec", "Show", h))
+	router.Handle("GET", "/swagger/spec/*packagePath", ctrl.NewHTTPRouterHandle("Show", h))
 	service.Info("mount", "ctrl", "Spec", "action", "Show", "route", "GET /swagger/spec/*packagePath")
 }

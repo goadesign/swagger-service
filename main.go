@@ -15,7 +15,7 @@ func main() {
 	goa.Log.SetHandler(log15.StreamHandler(os.Stderr, log15.LogfmtFormat()))
 
 	// Create service
-	api := goa.NewGraceful("goa Swagger service")
+	service := goa.NewGraceful("goa Swagger service")
 
 	// Setup CORS
 	spec, _ := cors.New(func() {
@@ -27,20 +27,20 @@ func main() {
 	})
 
 	// Setup middleware
-	api.Use(goa.RequestID())
-	api.Use(goa.LogRequest())
-	api.Use(cors.Middleware(spec))
-	api.Use(goa.Recover())
+	service.Use(goa.RequestID())
+	service.Use(goa.LogRequest())
+	service.Use(cors.Middleware(spec))
+	service.Use(goa.Recover())
 
 	// Mount "spec" controller
-	c := NewSpecController()
-	app.MountSpecController(api, c)
+	c := NewSpecController(service)
+	app.MountSpecController(service, c)
 
 	// Mount Swagger spec provider controller
-	swagger.MountController(api)
+	swagger.MountController(service)
 
 	// Start service, listen on port 8080
-	if err := api.ListenAndServe(":8080"); err != nil {
-		api.Crit(err.Error())
+	if err := service.ListenAndServe(":8080"); err != nil {
+		service.Crit(err.Error())
 	}
 }
