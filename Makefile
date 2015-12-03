@@ -14,7 +14,7 @@
 # - "all" is the default target, it runs all the targets in the order above.
 #
 DIRS=$(shell go list -f {{.Dir}} ./...)
-VERSION=v4
+VERSION=v5
 IMAGE=gcr.io/goa-swagger/service-node:$(VERSION)
 DEPEND=golang.org/x/tools/cmd/cover golang.org/x/tools/cmd/goimports \
 	github.com/golang/lint/golint github.com/onsi/gomega \
