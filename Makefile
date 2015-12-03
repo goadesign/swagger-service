@@ -44,9 +44,11 @@ build:
 	@docker build -t $(IMAGE) .
 
 gke:
-	@gcloud container clusters create goa-swagger --num-nodes 3 --machine-type n1-standard-1
+	@gcloud container clusters create goa-swagger --num-nodes 2 --machine-type n1-standard-1
+	@gcloud container clusters get-credentials goa-swagger
 	@kubectl run service-node --image=$(IMAGE) --port=8080
 	@kubectl expose rc service-node --type="LoadBalancer"
+	@kubectl autoscale rc service-node --min=2 --max=5
 
 run:
 	docker run --rm --publish 8080:8080 $(IMAGE)
