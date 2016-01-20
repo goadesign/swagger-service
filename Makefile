@@ -13,6 +13,9 @@
 # Meta targets:
 # - "all" is the default target, it runs all the targets in the order above.
 #
+NUM_CLUSTER_NODES=1
+MACHINE_TYPE=g1-small
+
 DIRS=$(shell go list -f {{.Dir}} ./...)
 VERSION=v5
 IMAGE=gcr.io/goa-swagger/service-node:$(VERSION)
@@ -20,7 +23,7 @@ DEPEND=golang.org/x/tools/cmd/cover golang.org/x/tools/cmd/goimports \
 	github.com/golang/lint/golint github.com/onsi/gomega \
 	github.com/onsi/ginkgo github.com/onsi/ginkgo/ginkgo
 
-.PHONY: build deploy
+.PHONY: build deploy gke-cluster gke-replica
 
 all: depend lint test build deploy
 
@@ -43,12 +46,13 @@ test:
 build:
 	@docker build -t $(IMAGE) .
 
-gke:
-	@gcloud container clusters create goa-swagger --num-nodes 2 --machine-type n1-standard-1
-	@gcloud container clusters get-credentials goa-swagger
-	@kubectl run service-node --image=$(IMAGE) --port=8080
-	@kubectl expose rc service-node --type="LoadBalancer"
-	@kubectl autoscale rc service-node --min=2 --max=5
+gke-cluster:
+	@gcloud container clusters create goa-swagger-design --num-nodes $NUM_CLUSTER_NODES --machine-type $MACHINE_TYPE
+
+gke-replica:
+	@gcloud container clusters get-credentials goa-swagger-design
+	@kubectl run goa-swagger --image=$(IMAGE) --port=8080
+	@kubectl expose rc goa-swagger --type="NodePort"
 
 run:
 	docker run --rm --publish 8080:8080 $(IMAGE)
