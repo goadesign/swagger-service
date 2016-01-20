@@ -47,12 +47,12 @@ build:
 	@docker build -t $(IMAGE) .
 
 gke-cluster:
-	@gcloud container clusters create goa-swagger-design --num-nodes $NUM_CLUSTER_NODES --machine-type $MACHINE_TYPE
+	@gcloud container clusters create goa-swagger-design --num-nodes $(NUM_CLUSTER_NODES) --machine-type $(MACHINE_TYPE)
 
 gke-replica:
 	@gcloud container clusters get-credentials goa-swagger-design
 	@kubectl run goa-swagger --image=$(IMAGE) --port=8080
-	@kubectl expose rc goa-swagger --type="NodePort"
+	@kubectl expose rc goa-swagger --type="LoadBalancer"
 
 run:
 	docker run --rm --publish 8080:8080 $(IMAGE)
