@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/goadesign/goa"
+	"github.com/goadesign/middleware"
 	"github.com/goadesign/middleware/cors"
 	"github.com/goadesign/swagger-service/app"
 	"github.com/goadesign/swagger-service/swagger"
@@ -15,7 +16,7 @@ func main() {
 	goa.Log.SetHandler(log15.StreamHandler(os.Stderr, log15.LogfmtFormat()))
 
 	// Create service
-	service := goa.NewGraceful("goa Swagger service")
+	service := goa.NewGraceful("goa Swagger service", false)
 
 	// Setup CORS
 	spec, _ := cors.New(func() {
@@ -27,10 +28,10 @@ func main() {
 	})
 
 	// Setup middleware
-	service.Use(goa.RequestID())
-	service.Use(goa.LogRequest())
+	service.Use(middleware.RequestID())
+	service.Use(middleware.LogRequest())
 	service.Use(cors.Middleware(spec))
-	service.Use(goa.Recover())
+	service.Use(middleware.Recover())
 
 	// Mount "spec" controller
 	c := NewSpecController(service)
