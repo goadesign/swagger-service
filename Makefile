@@ -17,11 +17,17 @@ NUM_CLUSTER_NODES=1
 MACHINE_TYPE=g1-small
 
 DIRS=$(shell go list -f {{.Dir}} ./...)
-VERSION=v5
+
+VERSION=v6
 IMAGE=gcr.io/goa-swagger/service-node:$(VERSION)
-DEPEND=golang.org/x/tools/cmd/cover golang.org/x/tools/cmd/goimports \
+
+DEPEND=\
+	golang.org/x/tools/cmd/cover \
+	golang.org/x/tools/cmd/goimports \
 	github.com/golang/lint/golint github.com/onsi/gomega \
-	github.com/onsi/ginkgo github.com/onsi/ginkgo/ginkgo
+	github.com/onsi/ginkgo github.com/onsi/ginkgo/ginkgo \
+	bitbucket.org/pkg/inflect
+
 
 .PHONY: build deploy gke-cluster gke-replica
 
@@ -59,6 +65,8 @@ gke-replica:
 run:
 	docker run --rm --publish 8080:8080 $(IMAGE)
 
-deploy:
+push:
 	@gcloud docker push $(IMAGE)
-	@kubectl rolling-update --update-period=10ms service-node --image=$(IMAGE)
+
+deploy:
+	@kubectl rolling-update --update-period=10ms goa-swagger --image=$(IMAGE)
