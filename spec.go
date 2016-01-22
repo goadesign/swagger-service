@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/raphael/goa"
-	"github.com/raphael/goa-swagger/app"
+	"github.com/goadesign/goa"
+	"github.com/goadesign/swagger-service/app"
 )
 
 // SpecController implements the spec resource.
@@ -25,7 +25,7 @@ func NewSpecController(service goa.Service) *SpecController {
 // Show clones the remote repo, runs "goagen swagger" and returns the corresponding JSON.
 // It uses cloud storage to cache the JSON using the git commit SHA in the object name.
 func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
-	tmpGoPath, err := ioutil.TempDir("", "goa-swagger-")
+	tmpGoPath, err := ioutil.TempDir("", "swagger-service-")
 	if err != nil {
 		return err
 	}

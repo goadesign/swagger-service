@@ -1,10 +1,10 @@
 //************************************************************************//
-// goa Swagger service: Application Controllers
+// API "goa Swagger service": Application Controllers
 //
 // Generated with goagen v0.0.1, command line:
 // $ goagen
-// --out=$(GOPATH)/src/github.com/raphael/goa-swagger
-// --design=github.com/raphael/goa-swagger/design
+// --out=$(GOPATH)/src/github.com/goadesign/swagger-service
+// --design=github.com/goadesign/swagger-service/design
 // --pkg=app
 //
 // The content of this file is auto-generated, DO NOT MODIFY
@@ -12,10 +12,7 @@
 
 package app
 
-import (
-	"github.com/julienschmidt/httprouter"
-	"github.com/raphael/goa"
-)
+import "github.com/goadesign/goa"
 
 // SpecController is the controller interface for the Spec actions.
 type SpecController interface {
@@ -25,8 +22,8 @@ type SpecController interface {
 
 // MountSpecController "mounts" a Spec resource controller on the given service.
 func MountSpecController(service goa.Service, ctrl SpecController) {
-	router := service.HTTPHandler().(*httprouter.Router)
 	var h goa.Handler
+	mux := service.ServeMux()
 	h = func(c *goa.Context) error {
 		ctx, err := NewShowSpecContext(c)
 		if err != nil {
@@ -34,6 +31,6 @@ func MountSpecController(service goa.Service, ctrl SpecController) {
 		}
 		return ctrl.Show(ctx)
 	}
-	router.Handle("GET", "/swagger/spec/*packagePath", ctrl.NewHTTPRouterHandle("Show", h))
+	mux.Handle("GET", "/swagger/spec/*packagePath", ctrl.HandleFunc("Show", h, nil))
 	service.Info("mount", "ctrl", "Spec", "action", "Show", "route", "GET /swagger/spec/*packagePath")
 }

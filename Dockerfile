@@ -1,4 +1,4 @@
 FROM golang:onbuild
-RUN go get -v github.com/raphael/goa/goagen
-RUN go get -v github.com/raphael/goa/design/dsl
+RUN go get -v github.com/goadesign/goa/goagen
+RUN go get -v github.com/goadesign/goa/design/dsl
 EXPOSE 8080

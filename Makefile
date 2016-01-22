@@ -1,6 +1,6 @@
 #! /usr/bin/make
 #
-# Makefile for goa-swagger
+# Makefile for swagger-service
 #
 # Targets:
 # - "depend" retrieves the Go packages needed to run the linter and tests
@@ -25,7 +25,7 @@ DEPEND=golang.org/x/tools/cmd/cover golang.org/x/tools/cmd/goimports \
 
 .PHONY: build deploy gke-cluster gke-replica
 
-all: depend lint test build deploy
+all: depend lint build test deploy
 
 depend:
 	@go get $(DEPEND)
@@ -44,6 +44,8 @@ test:
 	@ginkgo -r --randomizeAllSpecs --failOnPending --randomizeSuites --race -skipPackage vendor
 
 build:
+	@goagen app -d github.com/goadesign/swagger-service/design
+	@goagen swagger -d github.com/goadesign/swagger-service/design
 	@docker build -t $(IMAGE) .
 
 gke-cluster:

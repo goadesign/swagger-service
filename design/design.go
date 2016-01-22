@@ -1,8 +1,8 @@
 package design
 
 import (
-	. "github.com/raphael/goa/design"
-	. "github.com/raphael/goa/design/dsl"
+	. "github.com/goadesign/goa/design"
+	. "github.com/goadesign/goa/design/dsl"
 )
 
 var _ = API("goa Swagger service", func() {
@@ -15,14 +15,14 @@ var _ = API("goa Swagger service", func() {
 	})
 	License(func() {
 		Name("MIT")
-		URL("https://github.com/raphael/goa/blob/master/LICENSE")
+		URL("https://github.com/goadesign/goa/blob/master/LICENSE")
 	})
 	Docs(func() {
 		Description("GoDoc")
-		URL("https://godoc.org/github.com/raphael/goa-swagger")
+		URL("https://godoc.org/github.com/goadesign/swagger-service")
 	})
 	Host("swagger.goa.design")
-	Schemes("http")
+	Scheme("http")
 	BasePath("/swagger")
 	ResponseTemplate(UnprocessableEntity, func() {
 		Media("text/plain")

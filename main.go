@@ -3,10 +3,10 @@ package main
 import (
 	"os"
 
-	"github.com/raphael/goa"
-	"github.com/raphael/goa-swagger/app"
-	"github.com/raphael/goa-swagger/swagger"
-	"github.com/raphael/goa/cors"
+	"github.com/goadesign/goa"
+	"github.com/goadesign/middleware/cors"
+	"github.com/goadesign/swagger-service/app"
+	"github.com/goadesign/swagger-service/swagger"
 	"gopkg.in/inconshreveable/log15.v2"
 )
 
