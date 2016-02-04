@@ -18,7 +18,7 @@ MACHINE_TYPE=g1-small
 
 DIRS=$(shell go list -f {{.Dir}} ./...)
 
-VERSION=v7
+VERSION=v8
 IMAGE=gcr.io/goa-swagger/service-node:$(VERSION)
 
 DEPEND=\
@@ -31,7 +31,7 @@ DEPEND=\
 
 .PHONY: build deploy gke-cluster gke-replica
 
-all: depend lint build test deploy
+all: depend lint build test
 rollout: docker push deploy
 
 depend:

@@ -37,10 +37,12 @@ func NewShowSpecContext(c *goa.Context) (*ShowSpecContext, error) {
 
 // OK sends a HTTP response with status code 200.
 func (ctx *ShowSpecContext) OK(resp []byte) error {
+	ctx.Header().Set("Content-Type", "application/swagger")
 	return ctx.RespondBytes(200, resp)
 }
 
 // UnprocessableEntity sends a HTTP response with status code 422.
 func (ctx *ShowSpecContext) UnprocessableEntity(resp []byte) error {
+	ctx.Header().Set("Content-Type", "text/plain")
 	return ctx.RespondBytes(422, resp)
 }
