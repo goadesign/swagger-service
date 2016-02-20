@@ -12,37 +12,47 @@
 
 package app
 
-import "github.com/goadesign/goa"
+import (
+	"github.com/goadesign/goa"
+	"golang.org/x/net/context"
+)
 
 // ShowSpecContext provides the spec show action context.
 type ShowSpecContext struct {
-	*goa.Context
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
 	PackagePath string
 }
 
 // NewShowSpecContext parses the incoming request URL and body, performs validations and creates the
 // context used by the spec controller show action.
-func NewShowSpecContext(c *goa.Context) (*ShowSpecContext, error) {
+func NewShowSpecContext(ctx context.Context) (*ShowSpecContext, error) {
 	var err error
-	ctx := ShowSpecContext{Context: c}
-	rawPackagePath := c.Get("packagePath")
+	req := goa.Request(ctx)
+	rctx := ShowSpecContext{Context: ctx, ResponseData: goa.Response(ctx), RequestData: req}
+	rawPackagePath := req.Params.Get("packagePath")
 	if rawPackagePath != "" {
-		ctx.PackagePath = rawPackagePath
-		if err2 := goa.ValidateFormat(goa.FormatURI, ctx.PackagePath); err2 != nil {
-			err = goa.InvalidFormatError(`packagePath`, ctx.PackagePath, goa.FormatURI, err2, err)
+		rctx.PackagePath = rawPackagePath
+		if err2 := goa.ValidateFormat(goa.FormatURI, rctx.PackagePath); err2 != nil {
+			err = goa.InvalidFormatError(`packagePath`, rctx.PackagePath, goa.FormatURI, err2, err)
 		}
 	}
-	return &ctx, err
+	return &rctx, err
 }
 
 // OK sends a HTTP response with status code 200.
 func (ctx *ShowSpecContext) OK(resp []byte) error {
-	ctx.Header().Set("Content-Type", "application/swagger")
-	return ctx.RespondBytes(200, resp)
+	ctx.ResponseData.Header().Set("Content-Type", "application/swagger")
+	ctx.ResponseData.WriteHeader(200)
+	ctx.ResponseData.Write(resp)
+	return nil
 }
 
 // UnprocessableEntity sends a HTTP response with status code 422.
 func (ctx *ShowSpecContext) UnprocessableEntity(resp []byte) error {
-	ctx.Header().Set("Content-Type", "text/plain")
-	return ctx.RespondBytes(422, resp)
+	ctx.ResponseData.Header().Set("Content-Type", "text/plain")
+	ctx.ResponseData.WriteHeader(422)
+	ctx.ResponseData.Write(resp)
+	return nil
 }

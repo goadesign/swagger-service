@@ -12,7 +12,11 @@
 
 package app
 
-import "github.com/goadesign/goa"
+import (
+	"github.com/goadesign/goa"
+	"golang.org/x/net/context"
+	"net/http"
+)
 
 // SpecController is the controller interface for the Spec actions.
 type SpecController interface {
@@ -33,13 +37,13 @@ func MountSpecController(service goa.Service, ctrl SpecController) {
 	// Setup endpoint handler
 	var h goa.Handler
 	mux := service.ServeMux()
-	h = func(c *goa.Context) error {
-		ctx, err := NewShowSpecContext(c)
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		rctx, err := NewShowSpecContext(ctx)
 		if err != nil {
 			return goa.NewBadRequestError(err)
 		}
-		return ctrl.Show(ctx)
+		return ctrl.Show(rctx)
 	}
 	mux.Handle("GET", "/swagger/spec/*packagePath", ctrl.HandleFunc("Show", h, nil))
-	service.Info("mount", "ctrl", "Spec", "action", "Show", "route", "GET /swagger/spec/*packagePath")
+	goa.Info(goa.RootContext, "mount", goa.KV{"ctrl", "Spec"}, goa.KV{"action", "Show"}, goa.KV{"route", "GET /swagger/spec/*packagePath"})
 }

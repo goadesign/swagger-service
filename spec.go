@@ -47,7 +47,7 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 	}
 	b, err := Load(sha)
 	if err != nil {
-		ctx.Info("cache miss", "sha", sha)
+		goa.Info(ctx, "cache miss", goa.KV{"sha", sha})
 	} else {
 		return ctx.OK(b)
 	}
@@ -70,7 +70,7 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 	if sha != "" {
 		err := Save(b, sha)
 		if err != nil {
-			ctx.Error("failed to save swagger spec", "package", packagePath, "error", err.Error())
+			goa.Error(ctx, "failed to save swagger spec", goa.KV{"package", packagePath}, goa.KV{"error", err.Error()})
 		}
 	}
 	return ctx.OK(b)

@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/goadesign/goa"
+	"github.com/goadesign/logging/log15"
 	"github.com/goadesign/middleware"
 	"github.com/goadesign/middleware/cors"
 	"github.com/goadesign/swagger-service/app"
@@ -13,7 +14,9 @@ import (
 
 func main() {
 	// Configure logger
-	goa.Log.SetHandler(log15.StreamHandler(os.Stderr, log15.LogfmtFormat()))
+	logger := log15.New()
+	logger.SetHandler(log15.StreamHandler(os.Stderr, log15.LogfmtFormat()))
+	goa.Log = goalog15.New(logger)
 
 	// Create service
 	service := goa.NewGraceful("goa Swagger service", false)
@@ -29,7 +32,7 @@ func main() {
 
 	// Setup middleware
 	service.Use(middleware.RequestID())
-	service.Use(middleware.LogRequest())
+	service.Use(middleware.LogRequest(true))
 	service.Use(cors.Middleware(spec))
 	service.Use(middleware.Recover())
 
@@ -42,6 +45,6 @@ func main() {
 
 	// Start service, listen on port 8080
 	if err := service.ListenAndServe(":8080"); err != nil {
-		service.Crit(err.Error())
+		goa.Error(goa.RootContext, err.Error())
 	}
 }
