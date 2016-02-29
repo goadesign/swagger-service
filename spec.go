@@ -14,11 +14,11 @@ import (
 
 // SpecController implements the spec resource.
 type SpecController struct {
-	goa.Controller
+	*goa.Controller
 }
 
 // NewSpecController creates a spec controller.
-func NewSpecController(service goa.Service) *SpecController {
+func NewSpecController(service *goa.Service) *SpecController {
 	return &SpecController{Controller: service.NewController("Spec")}
 }
 

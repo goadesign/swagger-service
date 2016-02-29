@@ -45,14 +45,14 @@ func NewShowSpecContext(ctx context.Context) (*ShowSpecContext, error) {
 func (ctx *ShowSpecContext) OK(resp []byte) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/swagger")
 	ctx.ResponseData.WriteHeader(200)
-	ctx.ResponseData.Write(resp)
-	return nil
+	_, err := ctx.ResponseData.Write(resp)
+	return err
 }
 
 // UnprocessableEntity sends a HTTP response with status code 422.
 func (ctx *ShowSpecContext) UnprocessableEntity(resp []byte) error {
 	ctx.ResponseData.Header().Set("Content-Type", "text/plain")
 	ctx.ResponseData.WriteHeader(422)
-	ctx.ResponseData.Write(resp)
-	return nil
+	_, err := ctx.ResponseData.Write(resp)
+	return err
 }

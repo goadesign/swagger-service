@@ -37,11 +37,11 @@ func main() {
 	service.Use(middleware.Recover())
 
 	// Mount "spec" controller
-	c := NewSpecController(service)
-	app.MountSpecController(service, c)
+	c := NewSpecController(service.Service)
+	app.MountSpecController(service.Service, c)
 
 	// Mount Swagger spec provider controller
-	swagger.MountController(service)
+	swagger.MountController(service.Service)
 
 	// Start service, listen on port 8080
 	if err := service.ListenAndServe(":8080"); err != nil {
