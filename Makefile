@@ -56,7 +56,7 @@ build:
 	@go build
 
 docker:
-	@echo "Making sure repo is pushed..." && git diff-index --quiet HEAD
+	@echo "Making sure repo is clean (really it should be pushed)..." && git diff-index --quiet HEAD
 	@docker build -t $(IMAGE) .
 
 gke-cluster:
