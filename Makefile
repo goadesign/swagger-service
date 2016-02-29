@@ -39,7 +39,7 @@ depend:
 
 lint:
 	@for d in $(DIRS) ; do \
-		if [ "`goimports -l $$d/*.go | tee /dev/stderr`" ]; then \
+		if [ "`goimports -l $$d/*.go | grep -v app | tee /dev/stderr`" ]; then \
 			echo "^ - Repo contains improperly formatted go files" && echo && exit 1; \
 		fi \
 	done
@@ -56,6 +56,7 @@ build:
 	@go build
 
 docker:
+	@echo "Making sure repo is pushed..." && git diff-index --quiet HEAD
 	@docker build -t $(IMAGE) .
 
 gke-cluster:
