@@ -27,13 +27,18 @@ func initService(service *goa.Service) {
 		return
 	}
 	inited = true
+
 	// Setup encoders and decoders
-	service.SetEncoder(goa.GobEncoderFactory(), false, "application/gob", "application/x-gob")
-	service.SetEncoder(goa.JSONEncoderFactory(), true, "application/json")
-	service.SetEncoder(goa.XMLEncoderFactory(), false, "application/xml", "text/xml")
-	service.SetDecoder(goa.GobDecoderFactory(), false, "application/gob", "application/x-gob")
-	service.SetDecoder(goa.JSONDecoderFactory(), true, "application/json")
-	service.SetDecoder(goa.XMLDecoderFactory(), false, "application/xml", "text/xml")
+	service.Encoder(goa.NewJSONEncoder, "application/json")
+	service.Encoder(goa.NewXMLEncoder, "application/xml")
+	service.Encoder(goa.NewGobEncoder, "application/gob", "application/x-gob")
+	service.Decoder(goa.NewJSONDecoder, "application/json")
+	service.Decoder(goa.NewXMLDecoder, "application/xml")
+	service.Decoder(goa.NewGobDecoder, "application/gob", "application/x-gob")
+
+	// Setup default encoder and decoder
+	service.Encoder(goa.NewJSONEncoder, "*/*")
+	service.Decoder(goa.NewJSONDecoder, "*/*")
 }
 
 // SpecController is the controller interface for the Spec actions.
@@ -46,7 +51,6 @@ type SpecController interface {
 func MountSpecController(service *goa.Service, ctrl SpecController) {
 	initService(service)
 	var h goa.Handler
-	mux := service.Mux
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		rctx, err := NewShowSpecContext(ctx)
 		if err != nil {
@@ -54,6 +58,6 @@ func MountSpecController(service *goa.Service, ctrl SpecController) {
 		}
 		return ctrl.Show(rctx)
 	}
-	mux.Handle("GET", "/swagger/spec/*packagePath", ctrl.MuxHandler("Show", h, nil))
+	service.Mux.Handle("GET", "/swagger/spec/*packagePath", ctrl.MuxHandler("Show", h, nil))
 	goa.Info(goa.RootContext, "mount", goa.KV{"ctrl", "Spec"}, goa.KV{"action", "Show"}, goa.KV{"route", "GET /swagger/spec/*packagePath"})
 }
