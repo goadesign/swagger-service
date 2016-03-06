@@ -18,7 +18,7 @@ MACHINE_TYPE=g1-small
 
 DIRS=$(shell go list -f {{.Dir}} ./...)
 
-VERSION=v10
+VERSION=v11
 IMAGE=gcr.io/goa-swagger/service-node:$(VERSION)
 
 DEPEND=\
