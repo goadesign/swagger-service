@@ -1,0 +1,52 @@
+basePath: /swagger
+consumes:
+- application/json
+- application/xml
+- application/gob
+- application/x-gob
+externalDocs:
+  description: GoDoc
+  url: https://godoc.org/github.com/goadesign/swagger-service
+host: swagger.goa.design
+info:
+  contact:
+    email: admin@goa.design
+    name: The goa team
+    url: http://goa.design
+  description: The goa Swagger service can render the swagger specification of a goa
+    design package given its Go path
+  license:
+    name: MIT
+    url: https://github.com/goadesign/goa/blob/master/LICENSE
+  title: goa Swagger specification generation service
+  version: ""
+paths:
+  /spec/{packagePath}:
+    get:
+      description: Retrieve Swagger specification for given goa service design package
+      operationId: spec#show
+      parameters:
+      - description: Go package path to goa service design package
+        format: uri
+        in: path
+        name: packagePath
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+        "422": {}
+      schemes:
+      - http
+produces:
+- application/json
+- application/xml
+- application/gob
+- application/x-gob
+responses:
+  OK:
+    description: OK
+  UnprocessableEntity: {}
+schemes:
+- http
+swagger: "2.0"

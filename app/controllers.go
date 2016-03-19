@@ -51,13 +51,14 @@ type SpecController interface {
 func MountSpecController(service *goa.Service, ctrl SpecController) {
 	initService(service)
 	var h goa.Handler
+
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		rctx, err := NewShowSpecContext(ctx)
 		if err != nil {
-			return goa.NewBadRequestError(err)
+			return err
 		}
 		return ctrl.Show(rctx)
 	}
 	service.Mux.Handle("GET", "/swagger/spec/*packagePath", ctrl.MuxHandler("Show", h, nil))
-	goa.Info(goa.RootContext, "mount", goa.KV{"ctrl", "Spec"}, goa.KV{"action", "Show"}, goa.KV{"route", "GET /swagger/spec/*packagePath"})
+	service.Info("mount", "ctrl", "Spec", "action", "Show", "route", "GET /swagger/spec/*packagePath")
 }

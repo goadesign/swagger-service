@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"time"
 
 	"github.com/goadesign/goa"
 	"github.com/goadesign/logging/log15"
@@ -16,10 +17,11 @@ func main() {
 	// Configure logger
 	logger := log15.New()
 	logger.SetHandler(log15.StreamHandler(os.Stderr, log15.LogfmtFormat()))
-	goa.Log = goalog15.New(logger)
 
 	// Create service
-	service := goa.NewGraceful("goa Swagger service", false)
+	service := goa.New("goa Swagger service")
+	service.UseLogger(goalog15.New(logger))
+	server := goa.NewGraceful(service, false, time.Duration(0))
 
 	// Setup CORS
 	spec, _ := cors.New(func() {
@@ -37,14 +39,14 @@ func main() {
 	service.Use(middleware.Recover())
 
 	// Mount "spec" controller
-	c := NewSpecController(service.Service)
-	app.MountSpecController(service.Service, c)
+	c := NewSpecController(service)
+	app.MountSpecController(service, c)
 
 	// Mount Swagger spec provider controller
-	swagger.MountController(service.Service)
+	swagger.MountController(service)
 
 	// Start service, listen on port 8080
-	if err := service.ListenAndServe(":8080"); err != nil {
-		goa.Error(goa.RootContext, err.Error())
+	if err := server.ListenAndServe(":8080"); err != nil {
+		goa.Error(service.Context, err.Error())
 	}
 }
