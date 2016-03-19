@@ -27,7 +27,6 @@ paths:
       operationId: spec#show
       parameters:
       - description: Go package path to goa service design package
-        format: uri
         in: path
         name: packagePath
         required: true

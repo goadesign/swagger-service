@@ -34,9 +34,6 @@ func NewShowSpecContext(ctx context.Context) (*ShowSpecContext, error) {
 	rawPackagePath := req.Params.Get("packagePath")
 	if rawPackagePath != "" {
 		rctx.PackagePath = rawPackagePath
-		if err2 := goa.ValidateFormat(goa.FormatURI, rctx.PackagePath); err2 != nil {
-			err = goa.StackErrors(err, goa.InvalidFormatError(`packagePath`, rctx.PackagePath, goa.FormatURI, err2))
-		}
 	}
 	return &rctx, err
 }

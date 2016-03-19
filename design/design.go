@@ -38,9 +38,7 @@ var _ = Resource("spec", func() {
 		Routing(GET("/*packagePath"))
 		Description("Retrieve Swagger specification for given goa service design package")
 		Params(func() {
-			Param("packagePath", String, "Go package path to goa service design package", func() {
-				Format("uri")
-			})
+			Param("packagePath", String, "Go package path to goa service design package")
 		})
 		Response(OK)
 		Response(UnprocessableEntity)
