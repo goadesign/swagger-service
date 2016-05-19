@@ -44,3 +44,12 @@ var _ = Resource("spec", func() {
 		Response(UnprocessableEntity)
 	})
 })
+
+var _ = Resource("swagger", func() {
+
+	Origin("*", func() { // CORS policy that gives access to swagger JSON to all origins
+		Methods("GET")
+	})
+
+	Files("/swagger.json", "swagger/swagger.json")
+})

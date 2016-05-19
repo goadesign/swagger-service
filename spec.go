@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/goadesign/goa"
+	"github.com/goadesign/goa/logging/log15"
 	"github.com/goadesign/swagger-service/app"
 )
 
@@ -25,6 +26,7 @@ func NewSpecController(service *goa.Service) *SpecController {
 // Show clones the remote repo, runs "goagen swagger" and returns the corresponding JSON.
 // It uses cloud storage to cache the JSON using the git commit SHA in the object name.
 func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
+	logger := goalog15.Logger(ctx)
 	tmpGoPath, err := ioutil.TempDir("", "swagger-service-")
 	if err != nil {
 		return err
@@ -47,7 +49,7 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 	}
 	b, err := Load(sha)
 	if err != nil {
-		goa.Info(ctx, "cache miss", "sha", sha)
+		logger.Info("cache miss", "sha", sha)
 	} else {
 		return ctx.OK(b)
 	}
@@ -70,7 +72,7 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 	if sha != "" {
 		err := Save(b, sha)
 		if err != nil {
-			goa.Error(ctx, "failed to save swagger spec", "package", packagePath, "error", err.Error())
+			logger.Error("failed to save swagger spec", "package", packagePath, "error", err.Error())
 		}
 	}
 	return ctx.OK(b)

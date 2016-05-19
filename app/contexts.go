@@ -3,9 +3,8 @@
 //
 // Generated with goagen v0.0.1, command line:
 // $ goagen
-// --out=$(GOPATH)/src/github.com/goadesign/swagger-service
 // --design=github.com/goadesign/swagger-service/design
-// --pkg=app
+// --out=$(GOPATH)/src/github.com/goadesign/swagger-service
 //
 // The content of this file is auto-generated, DO NOT MODIFY
 //************************************************************************//
@@ -22,17 +21,19 @@ type ShowSpecContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
+	Service     *goa.Service
 	PackagePath string
 }
 
 // NewShowSpecContext parses the incoming request URL and body, performs validations and creates the
 // context used by the spec controller show action.
-func NewShowSpecContext(ctx context.Context) (*ShowSpecContext, error) {
+func NewShowSpecContext(ctx context.Context, service *goa.Service) (*ShowSpecContext, error) {
 	var err error
-	req := goa.Request(ctx)
-	rctx := ShowSpecContext{Context: ctx, ResponseData: goa.Response(ctx), RequestData: req}
-	rawPackagePath := req.Params.Get("packagePath")
-	if rawPackagePath != "" {
+	req := goa.ContextRequest(ctx)
+	rctx := ShowSpecContext{Context: ctx, ResponseData: goa.ContextResponse(ctx), RequestData: req, Service: service}
+	paramPackagePath := req.Params["packagePath"]
+	if len(paramPackagePath) > 0 {
+		rawPackagePath := paramPackagePath[0]
 		rctx.PackagePath = rawPackagePath
 	}
 	return &rctx, err
