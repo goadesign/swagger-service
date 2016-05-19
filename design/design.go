@@ -34,6 +34,10 @@ var _ = Resource("spec", func() {
 	DefaultMedia("application/swagger+json")
 	BasePath("/spec")
 
+	Origin("*", func() { // CORS policy that gives access to swagger JSON to all origins
+		Methods("GET")
+	})
+
 	Action("show", func() {
 		Routing(GET("/*packagePath"))
 		Description("Retrieve Swagger specification for given goa service design package")

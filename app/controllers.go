@@ -43,6 +43,7 @@ type SpecController interface {
 func MountSpecController(service *goa.Service, ctrl SpecController) {
 	initService(service)
 	var h goa.Handler
+	service.Mux.Handle("OPTIONS", "/swagger/spec/*packagePath", cors.HandlePreflight(service.Context, handleSpecOrigin))
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		rctx, err := NewShowSpecContext(ctx, service)
@@ -51,8 +52,32 @@ func MountSpecController(service *goa.Service, ctrl SpecController) {
 		}
 		return ctrl.Show(rctx)
 	}
+	h = handleSpecOrigin(h)
 	service.Mux.Handle("GET", "/swagger/spec/*packagePath", ctrl.MuxHandler("Show", h, nil))
 	service.LogInfo("mount", "ctrl", "Spec", "action", "Show", "route", "GET /swagger/spec/*packagePath")
+}
+
+// handleSpecOrigin applies the CORS response headers corresponding to the origin.
+func handleSpecOrigin(h goa.Handler) goa.Handler {
+	return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		origin := req.Header.Get("Origin")
+		if origin == "" {
+			// Not a CORS request
+			return h(ctx, rw, req)
+		}
+		if cors.MatchOrigin(origin, "*") {
+			ctx = goa.WithLogContext(ctx, "origin", origin)
+			rw.Header().Set("Access-Control-Allow-Origin", "*")
+			rw.Header().Set("Access-Control-Allow-Credentials", "false")
+			if acrm := req.Header.Get("Access-Control-Request-Method"); acrm != "" {
+				// We are handling a preflight request
+				rw.Header().Set("Access-Control-Allow-Methods", "GET")
+			}
+			return h(ctx, rw, req)
+		}
+
+		return h(ctx, rw, req)
+	}
 }
 
 // SwaggerController is the controller interface for the Swagger actions.
