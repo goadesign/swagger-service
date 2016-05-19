@@ -18,7 +18,7 @@ MACHINE_TYPE=g1-small
 
 DIRS=$(shell go list -f {{.Dir}} ./...)
 
-VERSION=v17
+VERSION=v18
 IMAGE=gcr.io/goa-swagger/service-node:$(VERSION)
 
 DEPEND=\
@@ -26,7 +26,7 @@ DEPEND=\
 	golang.org/x/tools/cmd/goimports \
 	github.com/golang/lint/golint github.com/onsi/gomega \
 	github.com/onsi/ginkgo github.com/onsi/ginkgo/ginkgo \
-	bitbucket.org/pkg/inflect
+	gopkg.in/yaml.v2
 
 
 .PHONY: build deploy gke-cluster gke-replica
