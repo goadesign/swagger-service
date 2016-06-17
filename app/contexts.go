@@ -41,7 +41,7 @@ func NewShowSpecContext(ctx context.Context, service *goa.Service) (*ShowSpecCon
 
 // OK sends a HTTP response with status code 200.
 func (ctx *ShowSpecContext) OK(resp []byte) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/swagger")
+	ctx.ResponseData.Header().Set("Content-Type", "application/swagger+json")
 	ctx.ResponseData.WriteHeader(200)
 	_, err := ctx.ResponseData.Write(resp)
 	return err

@@ -43,9 +43,14 @@ type SpecController interface {
 func MountSpecController(service *goa.Service, ctrl SpecController) {
 	initService(service)
 	var h goa.Handler
-	service.Mux.Handle("OPTIONS", "/swagger/spec/*packagePath", cors.HandlePreflight(service.Context, handleSpecOrigin))
+	service.Mux.Handle("OPTIONS", "/swagger/spec/*packagePath", ctrl.MuxHandler("preflight", handleSpecOrigin(cors.HandlePreflight()), nil))
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
 		rctx, err := NewShowSpecContext(ctx, service)
 		if err != nil {
 			return err

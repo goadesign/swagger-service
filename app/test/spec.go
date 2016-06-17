@@ -37,6 +37,7 @@ func ShowSpecOKCtx(t *testing.T, ctx context.Context, ctrl app.SpecController, p
 	if err != nil {
 		panic("invalid test data " + err.Error()) // bug
 	}
+
 	err = ctrl.Show(showCtx)
 	if err != nil {
 		t.Fatalf("controller returned %s, logs:\n%s", err, logBuf.String())
@@ -72,6 +73,7 @@ func ShowSpecUnprocessableEntityCtx(t *testing.T, ctx context.Context, ctrl app.
 	if err != nil {
 		panic("invalid test data " + err.Error()) // bug
 	}
+
 	err = ctrl.Show(showCtx)
 	if err != nil {
 		t.Fatalf("controller returned %s, logs:\n%s", err, logBuf.String())

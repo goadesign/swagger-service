@@ -7,7 +7,7 @@ import (
 	"github.com/goadesign/goa/logging/log15"
 	"github.com/goadesign/goa/middleware"
 	"github.com/goadesign/swagger-service/app"
-	"gopkg.in/inconshreveable/log15.v2"
+	"github.com/inconshreveable/log15"
 )
 
 func main() {
