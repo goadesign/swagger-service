@@ -47,7 +47,9 @@ paths:
         "422": {}
       schemes:
       - http
-      summary: show
+      summary: show spec
+      tags:
+      - spec
 produces:
 - application/json
 - application/xml

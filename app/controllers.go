@@ -1,10 +1,11 @@
 //************************************************************************//
 // API "goa Swagger service": Application Controllers
 //
-// Generated with goagen v0.0.1, command line:
+// Generated with goagen v0.2.dev, command line:
 // $ goagen
 // --design=github.com/goadesign/swagger-service/design
 // --out=$(GOPATH)/src/github.com/goadesign/swagger-service
+// --version=v0.2.dev
 //
 // The content of this file is auto-generated, DO NOT MODIFY
 //************************************************************************//

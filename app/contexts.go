@@ -1,10 +1,11 @@
 //************************************************************************//
 // API "goa Swagger service": Application Contexts
 //
-// Generated with goagen v0.0.1, command line:
+// Generated with goagen v0.2.dev, command line:
 // $ goagen
 // --design=github.com/goadesign/swagger-service/design
 // --out=$(GOPATH)/src/github.com/goadesign/swagger-service
+// --version=v0.2.dev
 //
 // The content of this file is auto-generated, DO NOT MODIFY
 //************************************************************************//
@@ -21,7 +22,6 @@ type ShowSpecContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Service     *goa.Service
 	PackagePath string
 }
 
@@ -29,8 +29,10 @@ type ShowSpecContext struct {
 // context used by the spec controller show action.
 func NewShowSpecContext(ctx context.Context, service *goa.Service) (*ShowSpecContext, error) {
 	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
 	req := goa.ContextRequest(ctx)
-	rctx := ShowSpecContext{Context: ctx, ResponseData: goa.ContextResponse(ctx), RequestData: req, Service: service}
+	rctx := ShowSpecContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramPackagePath := req.Params["packagePath"]
 	if len(paramPackagePath) > 0 {
 		rawPackagePath := paramPackagePath[0]
