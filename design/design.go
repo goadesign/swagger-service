@@ -21,10 +21,11 @@ var _ = API("goa Swagger service", func() {
 		Description("GoDoc")
 		URL("https://godoc.org/github.com/goadesign/swagger-service")
 	})
-	Host("swagger.goa.design")
-	Scheme("http")
+	Host("goa-swagger.appspot.com")
+	Scheme("https")
 	BasePath("/swagger")
 	ResponseTemplate(UnprocessableEntity, func() {
+		Description("goagen failed to generate the Swagger spec.")
 		Media("text/plain")
 		Status(422)
 	})
@@ -49,11 +50,14 @@ var _ = Resource("spec", func() {
 	})
 })
 
-var _ = Resource("swagger", func() {
-
-	Origin("*", func() { // CORS policy that gives access to swagger JSON to all origins
-		Methods("GET")
+var _ = Resource("ae", func() {
+	Description("Health check endpoint for App Engine")
+	BasePath("/_ah")
+	Action("health", func() {
+		Routing(
+			GET("/health"),
+		)
+		Description("Perform health check.")
+		Response(OK, "text/plain")
 	})
-
-	Files("/swagger.json", "swagger/swagger.json")
 })

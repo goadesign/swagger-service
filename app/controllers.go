@@ -34,6 +34,33 @@ func initService(service *goa.Service) {
 	service.Decoder.Register(goa.NewJSONDecoder, "*/*")
 }
 
+// AeController is the controller interface for the Ae actions.
+type AeController interface {
+	goa.Muxer
+	Health(*HealthAeContext) error
+}
+
+// MountAeController "mounts" a Ae resource controller on the given service.
+func MountAeController(service *goa.Service, ctrl AeController) {
+	initService(service)
+	var h goa.Handler
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewHealthAeContext(ctx, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Health(rctx)
+	}
+	service.Mux.Handle("GET", "/swagger/_ah/health", ctrl.MuxHandler("Health", h, nil))
+	service.LogInfo("mount", "ctrl", "Ae", "action", "Health", "route", "GET /swagger/_ah/health")
+}
+
 // SpecController is the controller interface for the Spec actions.
 type SpecController interface {
 	goa.Muxer
@@ -65,46 +92,6 @@ func MountSpecController(service *goa.Service, ctrl SpecController) {
 
 // handleSpecOrigin applies the CORS response headers corresponding to the origin.
 func handleSpecOrigin(h goa.Handler) goa.Handler {
-	return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
-		origin := req.Header.Get("Origin")
-		if origin == "" {
-			// Not a CORS request
-			return h(ctx, rw, req)
-		}
-		if cors.MatchOrigin(origin, "*") {
-			ctx = goa.WithLogContext(ctx, "origin", origin)
-			rw.Header().Set("Access-Control-Allow-Origin", "*")
-			rw.Header().Set("Access-Control-Allow-Credentials", "false")
-			if acrm := req.Header.Get("Access-Control-Request-Method"); acrm != "" {
-				// We are handling a preflight request
-				rw.Header().Set("Access-Control-Allow-Methods", "GET")
-			}
-			return h(ctx, rw, req)
-		}
-
-		return h(ctx, rw, req)
-	}
-}
-
-// SwaggerController is the controller interface for the Swagger actions.
-type SwaggerController interface {
-	goa.Muxer
-	goa.FileServer
-}
-
-// MountSwaggerController "mounts" a Swagger resource controller on the given service.
-func MountSwaggerController(service *goa.Service, ctrl SwaggerController) {
-	initService(service)
-	var h goa.Handler
-
-	h = ctrl.FileHandler("/swagger.json", "swagger/swagger.json")
-	h = handleSwaggerOrigin(h)
-	service.Mux.Handle("GET", "/swagger.json", ctrl.MuxHandler("serve", h, nil))
-	service.LogInfo("mount", "ctrl", "Swagger", "files", "swagger/swagger.json", "route", "GET /swagger.json")
-}
-
-// handleSwaggerOrigin applies the CORS response headers corresponding to the origin.
-func handleSwaggerOrigin(h goa.Handler) goa.Handler {
 	return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		origin := req.Header.Get("Origin")
 		if origin == "" {

@@ -29,8 +29,9 @@ func main() {
 	c := NewSpecController(service)
 	app.MountSpecController(service, c)
 
-	// Mount "swagger" controller
-	app.MountSwaggerController(service, service.NewController("swagger"))
+	// Mount "ae" controller
+	h := NewAeController(service)
+	app.MountAeController(service, h)
 
 	// Start service, listen on port 8080
 	if err := service.ListenAndServe(":8080"); err != nil {

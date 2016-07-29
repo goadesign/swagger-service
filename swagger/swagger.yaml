@@ -1,3 +1,4 @@
+basePath: /swagger
 consumes:
 - application/json
 - application/xml
@@ -6,7 +7,7 @@ consumes:
 externalDocs:
   description: GoDoc
   url: https://godoc.org/github.com/goadesign/swagger-service
-host: swagger.goa.design
+host: goa-swagger.appspot.com
 info:
   contact:
     email: admin@goa.design
@@ -20,18 +21,19 @@ info:
   title: goa Swagger specification generation service
   version: ""
 paths:
-  /swagger.json:
+  /_ah/health:
     get:
-      operationId: swagger#/swagger.json
+      description: Perform health check.
+      operationId: ae#health
       responses:
         "200":
-          description: File downloaded
-          schema:
-            type: file
+          description: OK
       schemes:
-      - http
-      summary: Download swagger/swagger.json
-  /swagger/spec/{packagePath}:
+      - https
+      summary: health ae
+      tags:
+      - ae
+  /spec/{packagePath}:
     get:
       description: Retrieve Swagger specification for given goa service design package
       operationId: spec#show
@@ -44,9 +46,10 @@ paths:
       responses:
         "200":
           description: OK
-        "422": {}
+        "422":
+          description: goagen failed to generate the Swagger spec.
       schemes:
-      - http
+      - https
       summary: show spec
       tags:
       - spec
@@ -58,7 +61,8 @@ produces:
 responses:
   OK:
     description: OK
-  UnprocessableEntity: {}
+  UnprocessableEntity:
+    description: goagen failed to generate the Swagger spec.
 schemes:
-- http
+- https
 swagger: "2.0"

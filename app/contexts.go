@@ -17,6 +17,32 @@ import (
 	"golang.org/x/net/context"
 )
 
+// HealthAeContext provides the ae health action context.
+type HealthAeContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewHealthAeContext parses the incoming request URL and body, performs validations and creates the
+// context used by the ae controller health action.
+func NewHealthAeContext(ctx context.Context, service *goa.Service) (*HealthAeContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	rctx := HealthAeContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *HealthAeContext) OK(resp []byte) error {
+	ctx.ResponseData.Header().Set("Content-Type", "text/plain")
+	ctx.ResponseData.WriteHeader(200)
+	_, err := ctx.ResponseData.Write(resp)
+	return err
+}
+
 // ShowSpecContext provides the spec show action context.
 type ShowSpecContext struct {
 	context.Context

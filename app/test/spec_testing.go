@@ -15,7 +15,7 @@ import (
 	"testing"
 )
 
-// ShowSpecOK Show runs the method Show of the given controller with the given parameters.
+// ShowSpecOK runs the method Show of the given controller with the given parameters.
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
@@ -72,7 +72,7 @@ func ShowSpecOK(t *testing.T, ctx context.Context, service *goa.Service, ctrl ap
 	return rw
 }
 
-// ShowSpecUnprocessableEntity Show runs the method Show of the given controller with the given parameters.
+// ShowSpecUnprocessableEntity runs the method Show of the given controller with the given parameters.
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
