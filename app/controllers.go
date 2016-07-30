@@ -57,8 +57,8 @@ func MountAeController(service *goa.Service, ctrl AeController) {
 		}
 		return ctrl.Health(rctx)
 	}
-	service.Mux.Handle("GET", "/swagger/_ah/health", ctrl.MuxHandler("Health", h, nil))
-	service.LogInfo("mount", "ctrl", "Ae", "action", "Health", "route", "GET /swagger/_ah/health")
+	service.Mux.Handle("GET", "/_ah/health", ctrl.MuxHandler("Health", h, nil))
+	service.LogInfo("mount", "ctrl", "Ae", "action", "Health", "route", "GET /_ah/health")
 }
 
 // SpecController is the controller interface for the Spec actions.

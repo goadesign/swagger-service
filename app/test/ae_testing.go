@@ -40,7 +40,7 @@ func HealthAeOK(t *testing.T, ctx context.Context, service *goa.Service, ctrl ap
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/swagger/_ah/health"),
+		Path: fmt.Sprintf("/_ah/health"),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {

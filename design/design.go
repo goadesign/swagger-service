@@ -52,10 +52,9 @@ var _ = Resource("spec", func() {
 
 var _ = Resource("ae", func() {
 	Description("Health check endpoint for App Engine")
-	BasePath("/_ah")
 	Action("health", func() {
 		Routing(
-			GET("/health"),
+			GET("//_ah/health"),
 		)
 		Description("Perform health check.")
 		Response(OK, "text/plain")

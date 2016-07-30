@@ -1,4 +1,3 @@
-basePath: /swagger
 consumes:
 - application/json
 - application/xml
@@ -33,7 +32,7 @@ paths:
       summary: health ae
       tags:
       - ae
-  /spec/{packagePath}:
+  /swagger/spec/{packagePath}:
     get:
       description: Retrieve Swagger specification for given goa service design package
       operationId: spec#show
