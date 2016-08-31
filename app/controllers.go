@@ -1,11 +1,11 @@
 //************************************************************************//
 // API "goa Swagger service": Application Controllers
 //
-// Generated with goagen v0.2.dev, command line:
+// Generated with goagen v1.0.0, command line:
 // $ goagen
 // --design=github.com/goadesign/swagger-service/design
 // --out=$(GOPATH)/src/github.com/goadesign/swagger-service
-// --version=v0.2.dev
+// --version=v1.0.0
 //
 // The content of this file is auto-generated, DO NOT MODIFY
 //************************************************************************//
@@ -92,6 +92,7 @@ func MountSpecController(service *goa.Service, ctrl SpecController) {
 
 // handleSpecOrigin applies the CORS response headers corresponding to the origin.
 func handleSpecOrigin(h goa.Handler) goa.Handler {
+
 	return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		origin := req.Header.Get("Origin")
 		if origin == "" {
@@ -100,7 +101,7 @@ func handleSpecOrigin(h goa.Handler) goa.Handler {
 		}
 		if cors.MatchOrigin(origin, "*") {
 			ctx = goa.WithLogContext(ctx, "origin", origin)
-			rw.Header().Set("Access-Control-Allow-Origin", "*")
+			rw.Header().Set("Access-Control-Allow-Origin", origin)
 			rw.Header().Set("Access-Control-Allow-Credentials", "false")
 			if acrm := req.Header.Get("Access-Control-Request-Method"); acrm != "" {
 				// We are handling a preflight request
