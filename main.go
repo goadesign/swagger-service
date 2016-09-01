@@ -37,4 +37,6 @@ func main() {
 	if err := service.ListenAndServe(":8080"); err != nil {
 		service.LogError(err.Error())
 	}
+
+	logger.Info("Exiting...")
 }
