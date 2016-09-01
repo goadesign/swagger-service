@@ -38,6 +38,7 @@ func initService(service *goa.Service) {
 type AeController interface {
 	goa.Muxer
 	Health(*HealthAeContext) error
+	Start(*StartAeContext) error
 }
 
 // MountAeController "mounts" a Ae resource controller on the given service.
@@ -59,6 +60,21 @@ func MountAeController(service *goa.Service, ctrl AeController) {
 	}
 	service.Mux.Handle("GET", "/_ah/health", ctrl.MuxHandler("Health", h, nil))
 	service.LogInfo("mount", "ctrl", "Ae", "action", "Health", "route", "GET /_ah/health")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewStartAeContext(ctx, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Start(rctx)
+	}
+	service.Mux.Handle("GET", "/_ah/start", ctrl.MuxHandler("Start", h, nil))
+	service.LogInfo("mount", "ctrl", "Ae", "action", "Start", "route", "GET /_ah/start")
 }
 
 // SpecController is the controller interface for the Spec actions.

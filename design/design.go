@@ -59,4 +59,11 @@ var _ = Resource("ae", func() {
 		Description("Perform health check.")
 		Response(OK, "text/plain")
 	})
+	Action("start", func() {
+		Routing(
+			GET("//_ah/start"),
+		)
+		Description("AppEngine start lifecycle event")
+		Response(OK, "text/plain")
+	})
 })

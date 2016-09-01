@@ -32,6 +32,18 @@ paths:
       summary: health ae
       tags:
       - ae
+  /_ah/start:
+    get:
+      description: AppEngine start lifecycle event
+      operationId: ae#start
+      responses:
+        "200":
+          description: OK
+      schemes:
+      - https
+      summary: start ae
+      tags:
+      - ae
   /swagger/spec/{packagePath}:
     get:
       description: Retrieve Swagger specification for given goa service design package

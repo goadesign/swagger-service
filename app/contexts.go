@@ -43,6 +43,32 @@ func (ctx *HealthAeContext) OK(resp []byte) error {
 	return err
 }
 
+// StartAeContext provides the ae start action context.
+type StartAeContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewStartAeContext parses the incoming request URL and body, performs validations and creates the
+// context used by the ae controller start action.
+func NewStartAeContext(ctx context.Context, service *goa.Service) (*StartAeContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	rctx := StartAeContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *StartAeContext) OK(resp []byte) error {
+	ctx.ResponseData.Header().Set("Content-Type", "text/plain")
+	ctx.ResponseData.WriteHeader(200)
+	_, err := ctx.ResponseData.Write(resp)
+	return err
+}
+
 // ShowSpecContext provides the spec show action context.
 type ShowSpecContext struct {
 	context.Context
