@@ -1,3 +1,15 @@
+//************************************************************************//
+// API "goa Swagger service": ae TestHelpers
+//
+// Generated with goagen v1.0.0, command line:
+// $ goagen
+// --design=github.com/goadesign/swagger-service/design
+// --out=$(GOPATH)/src/github.com/goadesign/swagger-service
+// --version=v1.0.0
+//
+// The content of this file is auto-generated, DO NOT MODIFY
+//************************************************************************//
+
 package test
 
 import (
@@ -12,14 +24,13 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"testing"
 )
 
 // HealthAeOK runs the method Health of the given controller with the given parameters.
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func HealthAeOK(t *testing.T, ctx context.Context, service *goa.Service, ctrl app.AeController) http.ResponseWriter {
+func HealthAeOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.AeController) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -75,7 +86,7 @@ func HealthAeOK(t *testing.T, ctx context.Context, service *goa.Service, ctrl ap
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func StartAeOK(t *testing.T, ctx context.Context, service *goa.Service, ctrl app.AeController) http.ResponseWriter {
+func StartAeOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.AeController) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer

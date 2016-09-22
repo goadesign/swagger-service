@@ -5,11 +5,9 @@ import (
 	"io/ioutil"
 	"log"
 
+	"cloud.google.com/go/storage"
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2/google"
 	sg "google.golang.org/api/storage/v1"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/storage"
 )
 
 const (
@@ -27,12 +25,7 @@ const (
 )
 
 func init() {
-	defClient, err := google.DefaultClient(context.Background(), scope)
-	if err != nil {
-		log.Fatalf("Unable to get default client: %v", err)
-	}
-	ctx = cloud.NewContext(projectID, defClient)
-	client, err := storage.NewClient(ctx)
+	client, err := storage.NewClient(context.Background())
 	if err != nil {
 		log.Fatalf("Unable to get storage client: %v", err)
 	}
