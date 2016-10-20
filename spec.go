@@ -38,10 +38,10 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 		return fmt.Errorf("invalid package path %s", packagePath)
 	}
 	var branch string
-	last := elems[len(elems)-1]
-	if strings.Contains(last, ":") {
-		branch = strings.Split(last, ":")[1]
-		design := strings.Split(last, ":")[0]
+	parts := strings.Split(elems[len(elems)-1], "@")
+	design := parts[0]
+	if len(parts) > 1 {
+		branch = parts[1]
 		elems[len(elems)-1] = design
 		packagePath = strings.Join(elems, "/")
 	}
@@ -86,22 +86,19 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 	return ctx.OK(b)
 }
 
-// clone does a shallow clone of the repo in the given directory and returns the "go1" or - if there
-// is no go1 branch - the "master" branch SHA.
+// clone does a shallow clone of the repo in the given directory and return the SHA
+// If there is no branch specified, the "master" branch is used.
 func clone(repo, tmpDir, branch string) (string, error) {
-	clone := func() error {
+	shallowClone := func() error {
 		gitCmd := exec.Command("git", "clone", "--depth=1", "--single-branch", "--branch", branch, repo)
 		gitCmd.Dir = tmpDir
 		return gitCmd.Run()
 	}
 	if branch == "" {
-		branch = "go1"
-	}
-	if err := clone(); err != nil {
 		branch = "master"
-		if err = clone(); err != nil {
-			return "", fmt.Errorf("failed to clone %s", repo)
-		}
+	}
+	if err := shallowClone(); err != nil {
+		return "", fmt.Errorf("failed to clone %s branch: %s", repo, branch)
 	}
 	gitCmd := exec.Command("git", "rev-parse", branch)
 	gitCmd.Dir = filepath.Join(tmpDir, filepath.Base(repo))
