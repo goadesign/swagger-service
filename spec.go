@@ -87,19 +87,32 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 }
 
 // clone does a shallow clone of the repo in the given directory and return the SHA
-// If there is no branch specified, the "master" branch is used.
-func clone(repo, tmpDir, branch string) (string, error) {
+// If there is no branch specified, try "go1" branch followed by "master" branch.
+// If the branch is not available return empty SHA with error
+func clone(repo, tmpDir, newbranch string) (string, error) {
+	var branch string
 	shallowClone := func() error {
 		gitCmd := exec.Command("git", "clone", "--depth=1", "--single-branch", "--branch", branch, repo)
 		gitCmd.Dir = tmpDir
 		return gitCmd.Run()
 	}
-	if branch == "" {
-		branch = "master"
+
+	if newbranch == "" {
+		branch = "go1"
+		if err := shallowClone(); err != nil {
+			branch = "master"
+			if err = shallowClone(); err != nil {
+				return "", fmt.Errorf("failed to clone %s", repo)
+			}
+		}
+
+	} else {
+		branch = newbranch
+		if err := shallowClone(); err != nil {
+			return "", fmt.Errorf("failed to clone %s branch: %s", repo, branch)
+		}
 	}
-	if err := shallowClone(); err != nil {
-		return "", fmt.Errorf("failed to clone %s branch: %s", repo, branch)
-	}
+
 	gitCmd := exec.Command("git", "rev-parse", branch)
 	gitCmd.Dir = filepath.Join(tmpDir, filepath.Base(repo))
 	out, err := gitCmd.CombinedOutput()
