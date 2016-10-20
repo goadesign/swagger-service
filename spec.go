@@ -89,15 +89,14 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 // clone does a shallow clone of the repo in the given directory and return the SHA
 // If there is no branch specified, try "go1" branch followed by "master" branch.
 // If the branch is not available return empty SHA with error
-func clone(repo, tmpDir, newbranch string) (string, error) {
-	var branch string
+func clone(repo, tmpDir, branch string) (string, error) {
 	shallowClone := func() error {
 		gitCmd := exec.Command("git", "clone", "--depth=1", "--single-branch", "--branch", branch, repo)
 		gitCmd.Dir = tmpDir
 		return gitCmd.Run()
 	}
 
-	if newbranch == "" {
+	if branch == "" {
 		branch = "go1"
 		if err := shallowClone(); err != nil {
 			branch = "master"
@@ -107,7 +106,6 @@ func clone(repo, tmpDir, newbranch string) (string, error) {
 		}
 
 	} else {
-		branch = newbranch
 		if err := shallowClone(); err != nil {
 			return "", fmt.Errorf("failed to clone %s branch: %s", repo, branch)
 		}
