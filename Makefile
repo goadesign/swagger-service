@@ -72,4 +72,5 @@ push:
 	@gcloud docker push $(IMAGE)
 
 deploy:
-	@kubectl rolling-update --update-period=10ms goa-swagger --image=$(IMAGE)
+	@aedeploy gcloud beta app deploy
+	#@kubectl rolling-update --update-period=10ms goa-swagger --image=$(IMAGE)

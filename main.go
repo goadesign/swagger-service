@@ -1,3 +1,4 @@
+//go:generate goagen bootstrap -d github.com/goadesign/swagger-service/design
 package main
 
 import (
