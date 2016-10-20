@@ -37,13 +37,21 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 	if len(elems) < 3 {
 		return fmt.Errorf("invalid package path %s", packagePath)
 	}
+	var branch string
+	last := elems[len(elems)-1]
+	if strings.Contains(last, ":") {
+		branch = strings.Split(last, ":")[1]
+		design := strings.Split(last, ":")[0]
+		elems[len(elems)-1] = design
+		packagePath = strings.Join(elems, "/")
+	}
 	repo := strings.Join(elems[:3], "/")
 	dir := strings.Join(elems[:2], "/")
 	dir = filepath.Join(tmpGoPath, "src", dir)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
 	}
-	sha, err := clone("https://"+repo, dir)
+	sha, err := clone("https://"+repo, dir, branch)
 	if err != nil {
 		return ctx.UnprocessableEntity([]byte(fmt.Sprintf("git clone: %s", err.Error())))
 	}
@@ -80,14 +88,15 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 
 // clone does a shallow clone of the repo in the given directory and returns the "go1" or - if there
 // is no go1 branch - the "master" branch SHA.
-func clone(repo, tmpDir string) (string, error) {
-	var branch string
+func clone(repo, tmpDir, branch string) (string, error) {
 	clone := func() error {
 		gitCmd := exec.Command("git", "clone", "--depth=1", "--single-branch", "--branch", branch, repo)
 		gitCmd.Dir = tmpDir
 		return gitCmd.Run()
 	}
-	branch = "go1"
+	if branch == "" {
+		branch = "go1"
+	}
 	if err := clone(); err != nil {
 		branch = "master"
 		if err = clone(); err != nil {
