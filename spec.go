@@ -37,13 +37,21 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 	if len(elems) < 3 {
 		return fmt.Errorf("invalid package path %s", packagePath)
 	}
+	var branch string
+	parts := strings.Split(elems[len(elems)-1], "@")
+	design := parts[0]
+	if len(parts) > 1 {
+		branch = parts[1]
+		elems[len(elems)-1] = design
+		packagePath = strings.Join(elems, "/")
+	}
 	repo := strings.Join(elems[:3], "/")
 	dir := strings.Join(elems[:2], "/")
 	dir = filepath.Join(tmpGoPath, "src", dir)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
 	}
-	sha, err := clone("https://"+repo, dir)
+	sha, err := clone("https://"+repo, dir, branch)
 	if err != nil {
 		return ctx.UnprocessableEntity([]byte(fmt.Sprintf("git clone: %s", err.Error())))
 	}
@@ -78,22 +86,33 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 	return ctx.OK(b)
 }
 
-// clone does a shallow clone of the repo in the given directory and returns the "go1" or - if there
-// is no go1 branch - the "master" branch SHA.
-func clone(repo, tmpDir string) (string, error) {
+// clone does a shallow clone of the repo in the given directory and return the SHA
+// If there is no branch specified, try "go1" branch followed by "master" branch.
+// If the branch is not available return empty SHA with error
+func clone(repo, tmpDir, newbranch string) (string, error) {
 	var branch string
-	clone := func() error {
+	shallowClone := func() error {
 		gitCmd := exec.Command("git", "clone", "--depth=1", "--single-branch", "--branch", branch, repo)
 		gitCmd.Dir = tmpDir
 		return gitCmd.Run()
 	}
-	branch = "go1"
-	if err := clone(); err != nil {
-		branch = "master"
-		if err = clone(); err != nil {
-			return "", fmt.Errorf("failed to clone %s", repo)
+
+	if newbranch == "" {
+		branch = "go1"
+		if err := shallowClone(); err != nil {
+			branch = "master"
+			if err = shallowClone(); err != nil {
+				return "", fmt.Errorf("failed to clone %s", repo)
+			}
+		}
+
+	} else {
+		branch = newbranch
+		if err := shallowClone(); err != nil {
+			return "", fmt.Errorf("failed to clone %s branch: %s", repo, branch)
 		}
 	}
+
 	gitCmd := exec.Command("git", "rev-parse", branch)
 	gitCmd.Dir = filepath.Join(tmpDir, filepath.Base(repo))
 	out, err := gitCmd.CombinedOutput()
