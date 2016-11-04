@@ -12,13 +12,7 @@
 
 package app
 
-import (
-	"fmt"
-	"strings"
-)
-
 // SpecHref returns the resource href.
-func SpecHref(packagePath interface{}) string {
-	parampackagePath := strings.TrimLeftFunc(fmt.Sprintf("%v", packagePath), func(r rune) bool { return r == '/' })
-	return fmt.Sprintf("/swagger/spec/%v", parampackagePath)
+func SpecHref() string {
+	return "/swagger/spec"
 }

@@ -44,14 +44,14 @@ paths:
       summary: start ae
       tags:
       - ae
-  /swagger/spec/{packagePath}:
+  /swagger/spec:
     get:
       description: Retrieve Swagger specification for given goa service design package
       operationId: spec#show
       parameters:
       - description: Go package path to goa service design package
-        in: path
-        name: packagePath
+        in: query
+        name: pkg
         required: true
         type: string
       responses:

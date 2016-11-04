@@ -32,7 +32,7 @@ func (c *SpecController) Show(ctx *app.ShowSpecContext) error {
 		return err
 	}
 	defer os.RemoveAll(tmpGoPath)
-	packagePath := strings.TrimPrefix(ctx.PackagePath, "/")
+	packagePath := strings.TrimPrefix(ctx.Pkg, "/")
 	elems := strings.Split(packagePath, "/")
 	if len(elems) < 3 {
 		return fmt.Errorf("invalid package path %s", packagePath)

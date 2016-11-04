@@ -30,7 +30,7 @@ import (
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func ShowSpecOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.SpecController, packagePath string) http.ResponseWriter {
+func ShowSpecOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.SpecController, pkg string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -50,15 +50,24 @@ func ShowSpecOK(t goatest.TInterface, ctx context.Context, service *goa.Service,
 
 	// Setup request context
 	rw := httptest.NewRecorder()
+	query := url.Values{}
+	{
+		sliceVal := []string{pkg}
+		query["pkg"] = sliceVal
+	}
 	u := &url.URL{
-		Path: fmt.Sprintf("/swagger/spec/%v", packagePath),
+		Path:     fmt.Sprintf("/swagger/spec"),
+		RawQuery: query.Encode(),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["packagePath"] = []string{fmt.Sprintf("%v", packagePath)}
+	{
+		sliceVal := []string{pkg}
+		prms["pkg"] = sliceVal
+	}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -87,7 +96,7 @@ func ShowSpecOK(t goatest.TInterface, ctx context.Context, service *goa.Service,
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func ShowSpecUnprocessableEntity(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.SpecController, packagePath string) http.ResponseWriter {
+func ShowSpecUnprocessableEntity(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.SpecController, pkg string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -107,15 +116,24 @@ func ShowSpecUnprocessableEntity(t goatest.TInterface, ctx context.Context, serv
 
 	// Setup request context
 	rw := httptest.NewRecorder()
+	query := url.Values{}
+	{
+		sliceVal := []string{pkg}
+		query["pkg"] = sliceVal
+	}
 	u := &url.URL{
-		Path: fmt.Sprintf("/swagger/spec/%v", packagePath),
+		Path:     fmt.Sprintf("/swagger/spec"),
+		RawQuery: query.Encode(),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["packagePath"] = []string{fmt.Sprintf("%v", packagePath)}
+	{
+		sliceVal := []string{pkg}
+		prms["pkg"] = sliceVal
+	}
 	if ctx == nil {
 		ctx = context.Background()
 	}

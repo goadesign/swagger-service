@@ -40,10 +40,11 @@ var _ = Resource("spec", func() {
 	})
 
 	Action("show", func() {
-		Routing(GET("/*packagePath"))
+		Routing(GET("/"))
 		Description("Retrieve Swagger specification for given goa service design package")
 		Params(func() {
-			Param("packagePath", String, "Go package path to goa service design package")
+			Param("pkg", String, "Go package path to goa service design package")
+			Required("pkg")
 		})
 		Response(OK)
 		Response(UnprocessableEntity)

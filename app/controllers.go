@@ -87,7 +87,7 @@ type SpecController interface {
 func MountSpecController(service *goa.Service, ctrl SpecController) {
 	initService(service)
 	var h goa.Handler
-	service.Mux.Handle("OPTIONS", "/swagger/spec/*packagePath", ctrl.MuxHandler("preflight", handleSpecOrigin(cors.HandlePreflight()), nil))
+	service.Mux.Handle("OPTIONS", "/swagger/spec", ctrl.MuxHandler("preflight", handleSpecOrigin(cors.HandlePreflight()), nil))
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -102,8 +102,8 @@ func MountSpecController(service *goa.Service, ctrl SpecController) {
 		return ctrl.Show(rctx)
 	}
 	h = handleSpecOrigin(h)
-	service.Mux.Handle("GET", "/swagger/spec/*packagePath", ctrl.MuxHandler("Show", h, nil))
-	service.LogInfo("mount", "ctrl", "Spec", "action", "Show", "route", "GET /swagger/spec/*packagePath")
+	service.Mux.Handle("GET", "/swagger/spec", ctrl.MuxHandler("Show", h, nil))
+	service.LogInfo("mount", "ctrl", "Spec", "action", "Show", "route", "GET /swagger/spec")
 }
 
 // handleSpecOrigin applies the CORS response headers corresponding to the origin.

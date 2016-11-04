@@ -74,7 +74,7 @@ type ShowSpecContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	PackagePath string
+	Pkg string
 }
 
 // NewShowSpecContext parses the incoming request URL and body, performs validations and creates the
@@ -85,10 +85,12 @@ func NewShowSpecContext(ctx context.Context, service *goa.Service) (*ShowSpecCon
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	rctx := ShowSpecContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramPackagePath := req.Params["packagePath"]
-	if len(paramPackagePath) > 0 {
-		rawPackagePath := paramPackagePath[0]
-		rctx.PackagePath = rawPackagePath
+	paramPkg := req.Params["pkg"]
+	if len(paramPkg) == 0 {
+		err = goa.MergeErrors(err, goa.MissingParamError("pkg"))
+	} else {
+		rawPkg := paramPkg[0]
+		rctx.Pkg = rawPkg
 	}
 	return &rctx, err
 }
