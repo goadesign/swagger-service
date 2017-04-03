@@ -24,6 +24,8 @@ paths:
     get:
       description: Perform health check.
       operationId: ae#health
+      produces:
+      - text/plain
       responses:
         "200":
           description: OK
@@ -36,6 +38,8 @@ paths:
     get:
       description: AppEngine start lifecycle event
       operationId: ae#start
+      produces:
+      - text/plain
       responses:
         "200":
           description: OK
@@ -54,6 +58,9 @@ paths:
         name: pkg
         required: true
         type: string
+      produces:
+      - application/swagger+json
+      - text/plain
       responses:
         "200":
           description: OK
