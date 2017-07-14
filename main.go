@@ -2,7 +2,10 @@
 package main
 
 import (
+	"net/http"
 	"os"
+
+	"google.golang.org/appengine"
 
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/logging/log15"
@@ -35,9 +38,8 @@ func main() {
 	app.MountAeController(service, h)
 
 	// Start service, listen on port 8080
-	if err := service.ListenAndServe(":8080"); err != nil {
-		service.LogError(err.Error())
-	}
+	http.Handle("/", service.Mux)
+	appengine.Main()
 
 	logger.Info("Exiting...")
 }
