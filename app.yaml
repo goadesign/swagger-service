@@ -1,11 +1,14 @@
 runtime: custom
-vm: true
+env: flex
 
 manual_scaling:
     instances: 1
-
-beta_settings:
+resources:
+  cpu: 1
+  memory_gb: 0.5
+  disk_size_gb: 10
+#beta_settings:
  # Enable Google Cloud Endpoints API management.
- use_endpoints_api_management: true
+ #use_endpoints_api_management: true
  # Specify the OpenAPI (a.k.a. Swagger) specification.
- endpoints_swagger_spec_file: swagger/swagger.yaml
+ #endpoints_swagger_spec_file: swagger/swagger.yaml
